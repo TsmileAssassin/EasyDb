@@ -3,7 +3,7 @@ Make Android app's SQLite database more easy to use.Through Apt and entity relat
 ## Useage
 
 ```java
-// declare table
+// declare table Category
 @DbTable(tableName = "category")
 public class Category {
     @DbColumn
@@ -12,6 +12,47 @@ public class Category {
 
     @DbColumn
     public String name;
+}
+
+// declare table Item
+@DbTable(tableName = "item")
+public class Item {
+    @DbColumn
+    @DbPrimaryKey
+    public int _id;
+
+    @DbColumn
+    public String name;
+
+    @DbColumn(varcharLength = 1000)
+    public String content;
+
+    @DbColumn(notNull = true)
+    public String text;
+
+    @DbColumn
+    public boolean isFav;
+
+    @DbColumn
+    public boolean isUseful;
+
+    @DbColumn
+    public String shareTitle;
+
+    @DbColumn(name = "p1")
+    public float percent;
+
+    @DbColumn(name = "p2")
+    public double percentD;
+
+    @Override
+    public String toString() {
+        return "id:" + _id + ",name:" + name
+                + ",content:" + content + ",text:" + text
+                + ",isFav:" + isFav + ",isUseful:"
+                + isUseful + ",shareTitle:" + shareTitle
+                + ",percent:" + percent + ",percentD:" + percentD;
+    }
 }
 
 // declare database
@@ -43,14 +84,15 @@ public class DbStore {
                     .build();
 }
 
-// use to insert, get
+// init database to use
 DbDataBase stickerDb = new DbDataBase(this, DbStore.ITEM_DB);
 try {
   stickerDb.init();
 } catch (Exception e) {
   //ignore
 }
-dbTemplateTableModel = new DbTemplateTableModel<>(DbStore.ITEM_TABLE,
+// create a table model
+DbTemplateTableModel dbTemplateTableModel = new DbTemplateTableModel<>(DbStore.ITEM_TABLE,
       stickerDb, Item.class);
 Item item1 = new Item();
 item1.name = "hahha1";
