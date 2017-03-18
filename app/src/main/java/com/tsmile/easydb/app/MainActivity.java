@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
-import com.tsmile.easydb.DbDataBase;
 import com.tsmile.easydb.DbTemplateTableModel;
 
 
@@ -18,14 +17,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DbDataBase stickerDb = new DbDataBase(this.getApplicationContext(), DbStore.ITEM_DB);
-        try {
-            stickerDb.init();
-        } catch (Exception e) {
-            //ignore
-        }
-        dbTemplateTableModel = new DbTemplateTableModel<>(DbStore.ITEM_TABLE,
-                stickerDb, Item.class);
         Item item1 = new Item();
         item1.name = "hahha1";
         item1.content = "content1";
@@ -34,10 +25,10 @@ public class MainActivity extends AppCompatActivity {
         item1.percent = 0.3f;
         item1.percentD = 2.7d;
 
-        dbTemplateTableModel.insert(item1);
+        DbHelper.getInstance(this).itemDbTemplateTableModel.insert(item1);
 
         TextView textView = (TextView) findViewById(R.id.text);
-        for (Item item : dbTemplateTableModel.getAll()) {
+        for (Item item : DbHelper.getInstance(this).itemDbTemplateTableModel.getAll()) {
             textView.setText(item.toString());
         }
     }

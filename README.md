@@ -84,16 +84,40 @@ public class DbStore {
                     .build();
 }
 
-// init database to use
-DbDataBase stickerDb = new DbDataBase(this, DbStore.ITEM_DB);
-try {
-  stickerDb.init();
-} catch (Exception e) {
-  //ignore
+// declare a DbHelper
+public class DbHelper {
+    private static DbHelper sInstance = null;
+    @NonNull
+    public final DbTemplateTableModel<Item> itemDbTemplateTableModel;
+    @NonNull
+    public final DbTemplateTableModel<Category> categoryDbTemplateTableModel;
+
+    private DbHelper(Context context) {
+        DbDataBase stickerDb = new DbDataBase(context.getApplicationContext(), DbStore.ITEM_DB);
+        try {
+            stickerDb.init();
+        } catch (Exception e) {
+            //ignore
+        }
+        itemDbTemplateTableModel = new DbTemplateTableModel<>(DbStore.ITEM_TABLE,
+                stickerDb, Item.class);
+        categoryDbTemplateTableModel = new DbTemplateTableModel<>(DbStore.CATEGORY_TABLE,
+                stickerDb, Category.class);
+    }
+
+    public static DbHelper getInstance(Context context) {
+        if (sInstance == null) {
+            synchronized (DbHelper.class) {
+                if (sInstance == null) {
+                    sInstance = new DbHelper(context);
+                }
+            }
+        }
+        return sInstance;
+    }
 }
-// create a table model
-DbTemplateTableModel dbTemplateTableModel = new DbTemplateTableModel<>(DbStore.ITEM_TABLE,
-      stickerDb, Item.class);
+
+// to use
 Item item1 = new Item();
 item1.name = "hahha1";
 item1.content = "content1";
@@ -103,11 +127,11 @@ item1.percent = 0.3f;
 item1.percentD = 2.7d;
 
 // insert
-dbTemplateTableModel.insert(item1);
+DbHelper.getInstance(this).itemDbTemplateTableModel.insert(item1);
 
 TextView textView = (TextView) findViewById(R.id.text);
 // get all
-for (Item item : dbTemplateTableModel.getAll()) {
+for (Item item : DbHelper.getInstance(this).itemDbTemplateTableModel.getAll()) {
   textView.setText(item.toString());
 }
 
